@@ -5,15 +5,15 @@
  * Agent contributors: Antigravity (DeepMind), Claude (Anthropic), Manus
  */
 import { motion } from 'framer-motion';
-import { ArrowLeft, Github, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Github } from 'lucide-react';
 import { Link } from 'wouter';
 import Reveal from '@/components/Reveal';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/sections/Footer';
 import { usePageTitle } from '@/hooks/usePageTitle';
 
-const THESIS_PDF = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663075749204/amstX3XdXJM3AMGdoXYXU5/ohaco-thesis-v0.1_776ab4d8.pdf';
-const THESIS_IMG = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663075749204/amstX3XdXJM3AMGdoXYXU5/ohaco-thesis-visual-6P9465kogU4UoRWLaHxa95.webp';
+
+
 
 const timeline = [
   { year: '2024', event: 'OHACO Labs founded. Thesis v0.1 drafted. "What if the house was open?"' },
@@ -106,28 +106,19 @@ export default function About() {
                   </p>
                 </div>
 
-                <div className="mt-8 flex items-center gap-4">
-                  <a
-                    href={THESIS_PDF}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors font-mono"
-                  >
-                    Read the full thesis (PDF)
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
               </div>
 
-              <div className="relative rounded-2xl overflow-hidden aspect-[4/5]">
-                <img
-                  src={THESIS_IMG}
-                  alt="OHACO thesis visual — light refracting through a prism"
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
-                <div className="absolute inset-0 rounded-2xl border border-primary/10" />
+              <div className="flex flex-col justify-center p-8 rounded-2xl border border-border/30" style={{ background: 'oklch(0.09 0.005 285 / 50%)' }}>
+                <div className="pl-6 border-l-2 border-primary/30 mb-8">
+                  <p className="text-lg text-foreground/70 leading-relaxed italic">
+                    "The house is open.<br />
+                    The tools are shared.<br />
+                    The data stays yours."
+                  </p>
+                </div>
+                <p className="text-xs font-mono text-muted-foreground/40 tracking-wide">
+                  OHACO Labs · Est. 2024 · Thesis v0.1
+                </p>
               </div>
             </div>
           </Reveal>

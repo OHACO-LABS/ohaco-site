@@ -8,7 +8,7 @@ import { Brain, ShieldCheck, Lock, Cable, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import Reveal from '@/components/Reveal';
 
-const PRODUCTS_BG = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663075749204/amstX3XdXJM3AMGdoXYXU5/ohaco-products-bg-CxyA3MZuJeLK99QAUPTECB.webp';
+
 
 const products = [
   {
@@ -69,17 +69,6 @@ export default function ProductsSection() {
 
   return (
     <section id="products" className="relative py-32 sm:py-40">
-      {/* Background image — subtle, positioned bottom-right */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-15"
-        style={{
-          backgroundImage: `url(${PRODUCTS_BG})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center right',
-          maskImage: 'radial-gradient(ellipse 80% 70% at 80% 60%, black 0%, transparent 70%)',
-          WebkitMaskImage: 'radial-gradient(ellipse 80% 70% at 80% 60%, black 0%, transparent 70%)',
-        }}
-      />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}

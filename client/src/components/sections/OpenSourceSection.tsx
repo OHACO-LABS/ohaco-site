@@ -1,11 +1,9 @@
 /**
  * OpenSourceSection — OpenCore story + GitHub link
- * Design: Atmospheric background, code-inspired typography, community emphasis
+ * Design: Pure text, no background images. Glass cards, code-inspired typography.
  */
 import { Github, GitBranch, Star, Users } from 'lucide-react';
 import Reveal from '@/components/Reveal';
-
-const OPENSOURCE_BG = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663075749204/amstX3XdXJM3AMGdoXYXU5/ohaco-opensource-bg-QdMTwQVkpmiXz4mUpywjLD.webp';
 
 const principles = [
   {
@@ -28,18 +26,6 @@ const principles = [
 export default function OpenSourceSection() {
   return (
     <section id="opensource" className="relative py-32 sm:py-40 overflow-hidden">
-      {/* Background */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-15"
-        style={{
-          backgroundImage: `url(${OPENSOURCE_BG})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          maskImage: 'linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 30%, black 70%, transparent 100%)',
-        }}
-      />
-
       {/* Architectural line */}
       <div className="arch-line mb-20 mx-auto max-w-3xl" />
 

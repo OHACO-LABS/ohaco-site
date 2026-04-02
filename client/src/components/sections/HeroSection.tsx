@@ -103,7 +103,7 @@ export default function HeroSection() {
           transition={{ duration: 1, delay: 2 }}
           className="mt-16 text-xs text-muted-foreground/40 font-mono"
         >
-          {window.innerWidth < 768 ? 'tap to grow fractals' : 'move your cursor · click to grow fractals'}
+          {typeof window !== 'undefined' && window.innerWidth < 768 ? 'touch to interact' : 'move your cursor to interact'}
         </motion.p>
       </div>
 
