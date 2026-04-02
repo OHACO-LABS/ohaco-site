@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Github } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
 
-const LOGO_URL = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663075749204/amstX3XdXJM3AMGdoXYXU5/ohaco-logo-polished-FoUhtuG8DbsxNyEKWvMJ4c.png';
+
 
 const navLinks = [
   { label: 'Thesis', href: '/#thesis', anchor: '#thesis' },
@@ -78,17 +78,16 @@ export default function Navbar() {
                 : 'bg-transparent'
             }`}
           >
-            {/* Logo — proper SPA routing */}
+            {/* Logo — CSS monogram, no image */}
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative w-8 h-8 overflow-hidden rounded-lg">
-                <img
-                  src={LOGO_URL}
-                  alt="OHACO"
-                  className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{ boxShadow: '0 0 12px rgba(108, 92, 231, 0.4)' }}
-                />
+              <div
+                className="relative w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm text-primary transition-all duration-300 group-hover:shadow-[0_0_16px_rgba(108,92,231,0.3)]"
+                style={{
+                  border: '1.5px solid oklch(0.55 0.18 275)',
+                  background: 'oklch(0.12 0.02 275 / 60%)',
+                }}
+              >
+                O
               </div>
               <span className="font-semibold text-sm tracking-wider text-foreground/90 group-hover:text-foreground transition-colors">
                 OHACO

@@ -4,7 +4,7 @@
  */
 import { Github } from 'lucide-react';
 
-const LOGO_URL = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663075749204/amstX3XdXJM3AMGdoXYXU5/ohaco-logo-polished-FoUhtuG8DbsxNyEKWvMJ4c.png';
+
 
 export default function Footer() {
   return (
@@ -17,7 +17,15 @@ export default function Footer() {
           {/* Brand column */}
           <div className="sm:col-span-5">
             <div className="flex items-center gap-3 mb-4">
-              <img src={LOGO_URL} alt="OHACO" className="w-7 h-7 object-contain" />
+              <div
+                className="w-7 h-7 rounded-md flex items-center justify-center font-bold text-xs text-primary"
+                style={{
+                  border: '1.5px solid oklch(0.55 0.18 275)',
+                  background: 'oklch(0.12 0.02 275 / 60%)',
+                }}
+              >
+                O
+              </div>
               <span className="font-semibold text-sm tracking-wider text-foreground/80">
                 OHACO
               </span>
