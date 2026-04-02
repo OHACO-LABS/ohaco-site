@@ -58,7 +58,7 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
           className="text-lg sm:text-xl text-foreground/80 max-w-2xl mx-auto leading-relaxed mb-4"
         >
-          An open space for all creatives.
+          Project-aware memory for AI agents.
         </motion.p>
 
         {/* Thesis line */}
@@ -68,7 +68,7 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 1.0, ease: [0.22, 1, 0.36, 1] }}
           className="text-sm text-foreground/50 font-mono tracking-wide max-w-xl mx-auto mb-12"
         >
-          Data is capital&ensp;·&ensp;AI redistributes it&ensp;·&ensp;Privacy is load-bearing
+          Persistent context&ensp;·&ensp;Cross-session recall&ensp;·&ensp;Privacy-first
         </motion.p>
 
         {/* CTA buttons */}
