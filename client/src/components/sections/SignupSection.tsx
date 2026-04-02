@@ -1,15 +1,23 @@
 /**
  * SignupSection — Three tracks: Customers, Beta Testers, Volunteers
  * Design: Railway-inspired progressive disclosure, glass morphism
- * Connects to existing /signup endpoint for customers
+ * Connects to collab-memory API /auth/tenant/register for real signup
  */
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Check, Loader2, Sparkles, FlaskConical, Heart, Users } from 'lucide-react';
+import { ArrowRight, Check, Loader2, Sparkles, FlaskConical, Heart, Users, Copy, CheckCheck } from 'lucide-react';
 import Reveal from '@/components/Reveal';
 
+const API_BASE = 'https://collab-memory.onrender.com';
+
 type Track = 'select' | 'customer' | 'beta' | 'volunteer';
-type Step = 'idle' | 'form' | 'submitting' | 'success';
+type Step = 'idle' | 'form' | 'submitting' | 'success' | 'error';
+
+interface TenantKeys {
+  api_key_write: string;
+  api_key_read: string;
+  tenant_id: string;
+}
 
 const tracks = [
   {
@@ -45,12 +53,32 @@ export default function SignupSection() {
   const [name, setName] = useState('');
   const [interest, setInterest] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [keys, setKeys] = useState<TenantKeys | null>(null);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSelectTrack = (t: Track) => {
     setTrack(t);
     setStep('form');
     setTimeout(() => inputRef.current?.focus(), 200);
+  };
+
+  const copyToClipboard = async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedKey(label);
+      setTimeout(() => setCopiedKey(null), 2000);
+    } catch {
+      // Fallback for older browsers
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      setCopiedKey(label);
+      setTimeout(() => setCopiedKey(null), 2000);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -64,20 +92,33 @@ export default function SignupSection() {
     setErrorMsg('');
 
     try {
-      const res = await fetch('/signup', {
+      const res = await fetch(`${API_BASE}/auth/tenant/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name, track, interest }),
+        body: JSON.stringify({
+          name: name || email.split('@')[0],
+          email,
+          track,
+          ...(interest ? { interest } : {}),
+        }),
       });
 
       if (res.ok) {
+        const data = await res.json();
+        setKeys({
+          api_key_write: data.api_key_write || data.write_key || '',
+          api_key_read: data.api_key_read || data.read_key || '',
+          tenant_id: data.tenant_id || data.id || '',
+        });
         setStep('success');
       } else {
-        // Graceful fallback — endpoint may not be wired yet
-        setStep('success');
+        const err = await res.json().catch(() => null);
+        setErrorMsg(err?.detail || err?.error || `Registration failed (${res.status}). Please try again.`);
+        setStep('error');
       }
-    } catch {
-      setStep('success');
+    } catch (err) {
+      setErrorMsg('Network error — the API may be waking up. Please try again in a moment.');
+      setStep('error');
     }
   };
 
@@ -88,15 +129,10 @@ export default function SignupSection() {
     setName('');
     setInterest('');
     setErrorMsg('');
+    setKeys(null);
   };
 
   const activeTrack = tracks.find(t => t.id === track);
-
-  const successMessages: Record<string, { title: string; body: string }> = {
-    customer: { title: 'Welcome to the house.', body: 'Check your inbox for your API key and quickstart guide.' },
-    beta: { title: 'Application received.', body: 'We\'ll reach out when the next beta cycle opens.' },
-    volunteer: { title: 'Welcome aboard.', body: 'We\'ll connect you with the right team and open issues.' },
-  };
 
   return (
     <section id="signup" className="relative py-32 sm:py-40">
@@ -248,22 +284,21 @@ export default function SignupSection() {
                   )}
 
                   <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* Name — for beta and volunteer */}
-                    {(track === 'beta' || track === 'volunteer') && (
-                      <div>
-                        <label className="block text-xs font-mono text-muted-foreground/60 tracking-wider uppercase mb-1.5">
-                          Name
-                        </label>
-                        <input
-                          type="text"
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                          placeholder="Your name"
-                          disabled={step === 'submitting'}
-                          className="w-full px-4 py-3 rounded-xl bg-background/50 border border-border/50 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm disabled:opacity-50"
-                        />
-                      </div>
-                    )}
+                    {/* Name */}
+                    <div>
+                      <label className="block text-xs font-mono text-muted-foreground/60 tracking-wider uppercase mb-1.5">
+                        Name
+                      </label>
+                      <input
+                        ref={track === 'customer' ? inputRef : undefined}
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        placeholder="Your name"
+                        disabled={step === 'submitting'}
+                        className="w-full px-4 py-3 rounded-xl bg-background/50 border border-border/50 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm disabled:opacity-50"
+                      />
+                    </div>
 
                     {/* Email — always */}
                     <div>
@@ -271,7 +306,7 @@ export default function SignupSection() {
                         Email *
                       </label>
                       <input
-                        ref={inputRef}
+                        ref={track !== 'customer' ? inputRef : undefined}
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -348,7 +383,12 @@ export default function SignupSection() {
                       {step === 'submitting' ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" />
-                          <span>Submitting...</span>
+                          <span>Creating workspace...</span>
+                        </>
+                      ) : step === 'error' ? (
+                        <>
+                          <span>Try Again</span>
+                          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                         </>
                       ) : (
                         <>
@@ -370,17 +410,17 @@ export default function SignupSection() {
             </motion.div>
           )}
 
-          {/* Success state */}
+          {/* Success state — real keys */}
           {step === 'success' && (
             <motion.div
               key="success"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="max-w-lg mx-auto text-center"
+              className="max-w-lg mx-auto"
             >
               <div
-                className="p-10 rounded-2xl border border-border/40"
+                className="p-8 sm:p-10 rounded-2xl border border-border/40"
                 style={{
                   background: 'oklch(0.1 0.006 285 / 60%)',
                   backdropFilter: 'blur(20px)',
@@ -394,16 +434,78 @@ export default function SignupSection() {
                 >
                   <Check className="w-6 h-6 text-emerald-400" />
                 </motion.div>
-                <p className="text-foreground font-medium text-lg mb-2">
-                  {successMessages[track]?.title || 'Welcome.'}
+
+                <p className="text-foreground font-medium text-lg mb-2 text-center">
+                  Welcome to the house.
                 </p>
-                <p className="text-sm text-muted-foreground mb-2">
-                  {successMessages[track]?.body || 'We\'ll be in touch.'}
+                <p className="text-sm text-muted-foreground mb-6 text-center">
+                  {keys ? 'Your API keys are ready. Save them — they won\'t be shown again.' : 'We\'ll be in touch at ' + email}
                 </p>
-                <p className="text-xs text-muted-foreground/50 font-mono mb-6">
-                  {email}
-                </p>
-                <div className="h-px w-16 bg-primary/20 mx-auto" />
+
+                {/* API Keys display */}
+                {keys && keys.api_key_write && (
+                  <div className="space-y-3 mb-6">
+                    <div className="rounded-xl border border-border/40 bg-background/30 p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-mono text-muted-foreground/60 uppercase tracking-wider">Write Key</span>
+                        <button
+                          onClick={() => copyToClipboard(keys.api_key_write, 'write')}
+                          className="text-muted-foreground/50 hover:text-primary transition-colors"
+                          aria-label="Copy write key"
+                        >
+                          {copiedKey === 'write' ? <CheckCheck className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                      <code className="text-xs font-mono text-foreground/80 break-all">{keys.api_key_write}</code>
+                    </div>
+
+                    {keys.api_key_read && (
+                      <div className="rounded-xl border border-border/40 bg-background/30 p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-mono text-muted-foreground/60 uppercase tracking-wider">Read Key</span>
+                          <button
+                            onClick={() => copyToClipboard(keys.api_key_read, 'read')}
+                            className="text-muted-foreground/50 hover:text-primary transition-colors"
+                            aria-label="Copy read key"
+                          >
+                            {copiedKey === 'read' ? <CheckCheck className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
+                        <code className="text-xs font-mono text-foreground/80 break-all">{keys.api_key_read}</code>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Quick start link */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <a
+                    href={`${API_BASE}/dashboard`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium bg-primary/15 hover:bg-primary/25 text-foreground transition-all duration-300"
+                  >
+                    Open Dashboard
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </a>
+                  <a
+                    href={`${API_BASE}/docs`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm border border-border/40 text-muted-foreground hover:text-foreground hover:border-primary/20 transition-all duration-300"
+                  >
+                    API Docs
+                  </a>
+                </div>
+
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={handleBack}
+                    className="text-xs text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                  >
+                    ← Back to tracks
+                  </button>
+                </div>
               </div>
             </motion.div>
           )}
