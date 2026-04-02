@@ -3,10 +3,10 @@ services:
     name: ohaco-site
     runtime: node
     repo: https://github.com/OHACO-LABS/ohaco-site.git
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --legacy-peer-deps && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: "10000"
+      - key: NODE_VERSION
+        value: 22.15.0
