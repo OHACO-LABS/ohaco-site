@@ -1,6 +1,6 @@
 /**
  * Signup — Real registration against collab-memory API
- * Calls /auth/tenant/register, returns real API keys
+ * Calls /auth/signup, returns real API keys
  */
 import { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -21,6 +21,7 @@ export default function Signup() {
   usePageTitle('Sign Up');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [keys, setKeys] = useState<TenantKeys | null>(null);
@@ -47,17 +48,22 @@ export default function Signup() {
       setError('Please enter a valid email');
       return;
     }
+    if (!password || password.length < 8) {
+      setError('Password must be at least 8 characters');
+      return;
+    }
 
     setLoading(true);
     setError('');
 
     try {
-      const res = await fetch(`${API_BASE}/auth/tenant/register`, {
+      const res = await fetch(`${API_BASE}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: name || email.split('@')[0],
           email,
+          password,
         }),
       });
 
@@ -70,7 +76,15 @@ export default function Signup() {
         });
       } else {
         const err = await res.json().catch(() => null);
-        setError(err?.detail || err?.error || `Registration failed (${res.status})`);
+        const raw = err?.detail || err?.error || `Registration failed (${res.status})`;
+        const lower = raw.toLowerCase();
+        if (lower.includes('registration is disabled') || lower.includes('use post')) {
+          setError('Registration is temporarily closed. Please try again later.');
+        } else if (lower.includes('already exists') || lower.includes('duplicate')) {
+          setError('An account with this email already exists.');
+        } else {
+          setError('Something went wrong. Please try again.');
+        }
       }
     } catch {
       setError('Network error — the API may be waking up. Try again in a moment.');
@@ -139,6 +153,22 @@ export default function Signup() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="you@studio.com"
                       required
+                      className="w-full px-4 py-3.5 rounded-xl border border-border/40 bg-card/30 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label htmlFor="password" className="block text-xs font-mono text-muted-foreground/60 tracking-wider uppercase mb-2">
+                      Password *
+                    </label>
+                    <input
+                      id="password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Min. 8 characters"
+                      required
+                      minLength={8}
                       className="w-full px-4 py-3.5 rounded-xl border border-border/40 bg-card/30 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm"
                     />
                   </div>

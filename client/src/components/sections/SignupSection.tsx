@@ -1,7 +1,7 @@
 /**
  * SignupSection — Three tracks: Customers, Beta Testers, Volunteers
  * Design: Railway-inspired progressive disclosure, glass morphism
- * Connects to collab-memory API /auth/tenant/register for real signup
+ * Connects to collab-memory API /auth/signup for real signup
  */
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -50,6 +50,7 @@ export default function SignupSection() {
   const [track, setTrack] = useState<Track>('select');
   const [step, setStep] = useState<Step>('idle');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [interest, setInterest] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -87,17 +88,22 @@ export default function SignupSection() {
       setErrorMsg('Please enter a valid email');
       return;
     }
+    if (!password || password.length < 8) {
+      setErrorMsg('Password must be at least 8 characters');
+      return;
+    }
 
     setStep('submitting');
     setErrorMsg('');
 
     try {
-      const res = await fetch(`${API_BASE}/auth/tenant/register`, {
+      const res = await fetch(`${API_BASE}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: name || email.split('@')[0],
           email,
+          password,
           track,
           ...(interest ? { interest } : {}),
         }),
@@ -113,7 +119,15 @@ export default function SignupSection() {
         setStep('success');
       } else {
         const err = await res.json().catch(() => null);
-        setErrorMsg(err?.detail || err?.error || `Registration failed (${res.status}). Please try again.`);
+        const raw = err?.detail || err?.error || `Registration failed (${res.status})`;
+        const lower = raw.toLowerCase();
+        if (lower.includes('registration is disabled') || lower.includes('use post')) {
+          setErrorMsg('Registration is temporarily closed. Please try again later.');
+        } else if (lower.includes('already exists') || lower.includes('duplicate')) {
+          setErrorMsg('An account with this email already exists.');
+        } else {
+          setErrorMsg('Something went wrong. Please try again.');
+        }
         setStep('error');
       }
     } catch (err) {
@@ -314,6 +328,23 @@ export default function SignupSection() {
                         required
                         disabled={step === 'submitting'}
                         className="w-full px-4 py-3 rounded-xl bg-background/50 border border-border/50 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm font-mono disabled:opacity-50"
+                      />
+                    </div>
+
+                    {/* Password */}
+                    <div>
+                      <label className="block text-xs font-mono text-muted-foreground/60 tracking-wider uppercase mb-1.5">
+                        Password *
+                      </label>
+                      <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Min. 8 characters"
+                        required
+                        minLength={8}
+                        disabled={step === 'submitting'}
+                        className="w-full px-4 py-3 rounded-xl bg-background/50 border border-border/50 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm disabled:opacity-50"
                       />
                     </div>
 
