@@ -52,6 +52,18 @@ export default function Signup() {
       setError('Password must be at least 8 characters');
       return;
     }
+    if (!/[A-Z]/.test(password)) {
+      setError('Password must contain at least one uppercase letter');
+      return;
+    }
+    if (!/[a-z]/.test(password)) {
+      setError('Password must contain at least one lowercase letter');
+      return;
+    }
+    if (!/[0-9]/.test(password)) {
+      setError('Password must contain at least one digit');
+      return;
+    }
 
     setLoading(true);
     setError('');
@@ -171,6 +183,9 @@ export default function Signup() {
                       minLength={8}
                       className="w-full px-4 py-3.5 rounded-xl border border-border/40 bg-card/30 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary/40 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm"
                     />
+                    <p className="mt-1.5 text-[10px] text-muted-foreground/40 font-mono">
+                      Min 8 chars · uppercase · lowercase · digit
+                    </p>
                   </div>
 
                   {error && (

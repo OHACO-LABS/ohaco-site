@@ -92,6 +92,18 @@ export default function SignupSection() {
       setErrorMsg('Password must be at least 8 characters');
       return;
     }
+    if (!/[A-Z]/.test(password)) {
+      setErrorMsg('Password must contain at least one uppercase letter');
+      return;
+    }
+    if (!/[a-z]/.test(password)) {
+      setErrorMsg('Password must contain at least one lowercase letter');
+      return;
+    }
+    if (!/[0-9]/.test(password)) {
+      setErrorMsg('Password must contain at least one digit');
+      return;
+    }
 
     setStep('submitting');
     setErrorMsg('');
@@ -346,6 +358,9 @@ export default function SignupSection() {
                         disabled={step === 'submitting'}
                         className="w-full px-4 py-3 rounded-xl bg-background/50 border border-border/50 text-foreground placeholder:text-muted-foreground/30 focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/20 transition-all duration-300 text-sm disabled:opacity-50"
                       />
+                      <p className="mt-1.5 text-[10px] text-muted-foreground/40 font-mono">
+                        Min 8 chars · uppercase · lowercase · digit
+                      </p>
                     </div>
 
                     {/* Interest — for volunteer */}
