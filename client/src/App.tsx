@@ -9,7 +9,6 @@ import About from "./pages/About";
 
 import Docs from "./pages/Docs";
 import Signup from "./pages/Signup";
-import SignupCallback from "./pages/SignupCallback";
 import Investors from "./pages/Investors";
 
 function Router() {
@@ -20,7 +19,6 @@ function Router() {
 
       <Route path={"/docs"} component={Docs} />
       <Route path={"/signup"} component={Signup} />
-      <Route path={"/signup/callback"} component={SignupCallback} />
       <Route path={"/investors"} component={Investors} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
