@@ -48,7 +48,7 @@ export default function Footer() {
                 { label: 'Thesis', href: '#thesis' },
                 { label: 'Products', href: '#products' },
                 { label: 'OpenCore', href: '#opensource' },
-                { label: 'Pricing', href: '/pricing' },
+                { label: 'About', href: '/about' },
                 { label: 'Docs', href: '/docs' },
                 { label: 'Join', href: '#signup' },
               ].map((link) => (

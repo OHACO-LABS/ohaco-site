@@ -15,7 +15,7 @@ import ThesisSection from '@/components/sections/ThesisSection';
 import StatsBar from '@/components/sections/StatsBar';
 import ProductsSection from '@/components/sections/ProductsSection';
 import HowItWorksSection from '@/components/sections/HowItWorksSection';
-import PricingPreview from '@/components/sections/PricingPreview';
+
 import BuiltBySection from '@/components/sections/BuiltBySection';
 import OpenSourceSection from '@/components/sections/OpenSourceSection';
 import SignupSection from '@/components/sections/SignupSection';
@@ -58,7 +58,7 @@ export default function Home() {
         <StatsBar />
         <ProductsSection />
         <HowItWorksSection />
-        <PricingPreview />
+
         <BuiltBySection />
         <OpenSourceSection />
         <SignupSection />
