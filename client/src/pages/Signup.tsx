@@ -307,7 +307,7 @@ export default function Signup() {
                 {/* Quick start actions */}
                 <div className="flex flex-col gap-3">
                   <a
-                    href={`${API_BASE}/dashboard`}
+                    href={`${API_BASE}/`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-sm font-medium bg-primary text-white hover:shadow-[0_0_30px_rgba(108,92,231,0.3)] transition-all duration-300"

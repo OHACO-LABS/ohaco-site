@@ -511,7 +511,7 @@ export default function SignupSection() {
                 {/* Quick start link */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <a
-                    href={`${API_BASE}/dashboard`}
+                    href={`${API_BASE}/`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium bg-primary/15 hover:bg-primary/25 text-foreground transition-all duration-300"
