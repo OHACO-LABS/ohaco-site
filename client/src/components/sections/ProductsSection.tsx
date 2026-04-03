@@ -2,7 +2,7 @@
  * ProductsSection — 5 Product overview cards
  * Semantic Memory, Cognitive Proxy, Vault, MCP Adapter, Agent Teams
  * Design: Glass cards with hover glow, staggered reveal, icon accents
- * Per CC brief: products, pricing tiers, thesis, opencore
+ * Per CC brief: products, thesis, opencore
  */
 import { Brain, ShieldCheck, Lock, Cable, Users } from 'lucide-react';
 import { toast } from 'sonner';
