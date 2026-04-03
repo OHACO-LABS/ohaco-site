@@ -31,7 +31,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed max-w-xs mb-4">
-              Our House Arts Collective. An open space for all creatives. Building the infrastructure for a sovereign creative economy.
+              OHACO. An open space for all creatives. Building the infrastructure for a sovereign creative economy.
             </p>
             <p className="text-xs text-muted-foreground/50 font-mono">
               Est. 2024 · OHACO Labs

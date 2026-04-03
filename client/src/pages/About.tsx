@@ -72,7 +72,7 @@ export default function About() {
 
           <Reveal delay={0.1}>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-6">
-              Our House Arts Collective.{' '}
+              OHACO.{' '}
               <span className="gradient-text">Est. 2024.</span>
             </h1>
           </Reveal>

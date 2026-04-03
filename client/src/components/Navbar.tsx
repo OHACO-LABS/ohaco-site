@@ -89,7 +89,7 @@ export default function Navbar() {
                 O
               </div>
               <span className="font-semibold text-sm tracking-wider text-foreground/90 group-hover:text-foreground transition-colors">
-                OHACO LABS
+                OHACO
               </span>
             </Link>
 

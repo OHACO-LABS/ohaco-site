@@ -47,8 +47,7 @@ export default function HeroSection() {
           className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[0.95] mb-6"
           style={{ textShadow: '0 0 60px rgba(108, 92, 231, 0.15), 0 2px 20px rgba(0,0,0,0.5)' }}
         >
-          <span className="block text-white">Our House</span>
-          <span className="block gradient-text">Arts Collective</span>
+          <span className="block gradient-text">OHACO</span>
         </motion.h1>
 
         {/* Subtitle */}
