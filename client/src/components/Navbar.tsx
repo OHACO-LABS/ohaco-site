@@ -6,8 +6,9 @@
  */
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Github } from 'lucide-react';
+import { Menu, X, Github, Sun, Moon } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
+import { useTheme } from '@/contexts/ThemeContext';
 
 
 
@@ -22,6 +23,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [location] = useLocation();
+  const { theme, toggleTheme, switchable } = useTheme();
   const isHome = location === '/';
 
   useEffect(() => {
@@ -134,6 +136,15 @@ export default function Navbar() {
 
             {/* Desktop CTA + GitHub */}
             <div className="hidden md:flex items-center gap-3">
+              {switchable && toggleTheme && (
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-primary/8 transition-all duration-300"
+                  aria-label="Toggle theme"
+                >
+                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                </button>
+              )}
               <a
                 href="https://github.com/OHACO-LABS"
                 target="_blank"
@@ -239,6 +250,15 @@ export default function Navbar() {
                   <Github className="w-4 h-4" />
                   <span className="text-sm">GitHub</span>
                 </a>
+                {switchable && toggleTheme && (
+                  <button
+                    onClick={toggleTheme}
+                    className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-foreground transition-colors w-full text-left"
+                  >
+                    {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                    <span className="text-sm">{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>
