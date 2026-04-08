@@ -108,18 +108,38 @@ export default function SignupSection() {
     setStep('submitting');
     setErrorMsg('');
 
+    const payload = {
+      name: name || email.split('@')[0],
+      email,
+      password,
+      track,
+      ...(interest ? { interest } : {}),
+    };
+
+    // Render free tier can cold-start for 50s+. Use 90s timeout and one auto-retry.
+    const doFetch = async (attempt: number): Promise<Response> => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), attempt === 0 ? 60000 : 90000);
+      try {
+        return await fetch(`${API_BASE}/auth/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+
     try {
-      const res = await fetch(`${API_BASE}/auth/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name || email.split('@')[0],
-          email,
-          password,
-          track,
-          ...(interest ? { interest } : {}),
-        }),
-      });
+      let res: Response;
+      try {
+        res = await doFetch(0);
+      } catch {
+        // First attempt failed (likely cold start) — retry once
+        res = await doFetch(1);
+      }
 
       if (res.ok) {
         const data = await res.json();
@@ -131,19 +151,22 @@ export default function SignupSection() {
         setStep('success');
       } else {
         const err = await res.json().catch(() => null);
-        const raw = err?.detail || err?.error || `Registration failed (${res.status})`;
+        // detail may be a string or object — normalize
+        const raw = typeof err?.detail === 'string' ? err.detail
+          : typeof err?.detail?.error === 'string' ? err.detail.error
+          : err?.error || `Registration failed (${res.status})`;
         const lower = raw.toLowerCase();
-        if (lower.includes('registration is disabled') || lower.includes('use post')) {
-          setErrorMsg('Registration is temporarily closed. Please try again later.');
+        if (lower.includes('registration is disabled') || lower.includes('use post') || lower.includes('/apply')) {
+          setErrorMsg('Registration is currently by invite only. Request access at /apply.');
         } else if (lower.includes('already exists') || lower.includes('duplicate')) {
-          setErrorMsg('An account with this email already exists.');
+          setErrorMsg('An account with this email already exists. Try signing in.');
         } else {
-          setErrorMsg('Something went wrong. Please try again.');
+          setErrorMsg(raw);
         }
         setStep('error');
       }
     } catch (err) {
-      setErrorMsg('Network error — the API may be waking up. Please try again in a moment.');
+      setErrorMsg('Could not reach the server. Please try again in a moment.');
       setStep('error');
     }
   };
@@ -456,7 +479,7 @@ export default function SignupSection() {
             </motion.div>
           )}
 
-          {/* Success state — real keys */}
+          {/* Success state — track-specific */}
           {step === 'success' && (
             <motion.div
               key="success"
@@ -481,15 +504,53 @@ export default function SignupSection() {
                   <Check className="w-6 h-6 text-emerald-400" />
                 </motion.div>
 
-                <p className="text-foreground font-medium text-lg mb-2 text-center">
-                  Welcome to the house.
-                </p>
-                <p className="text-sm text-muted-foreground mb-6 text-center">
-                  {keys ? 'Your API keys are ready. Save them — they won\'t be shown again.' : 'We\'ll be in touch at ' + email}
-                </p>
+                {/* ── Beta: invited with next steps ── */}
+                {track === 'beta' && (
+                  <>
+                    <p className="text-foreground font-medium text-lg mb-2 text-center">
+                      You're in the queue.
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-4 text-center leading-relaxed">
+                      We review beta applications manually. When approved, you'll receive an email with your workspace credentials and next steps.
+                    </p>
+                    <p className="text-xs text-muted-foreground/50 mb-6 text-center font-mono">
+                      Check your inbox at <span className="text-foreground/70">{email}</span> for a verification email.
+                    </p>
+                  </>
+                )}
 
-                {/* API Keys display */}
-                {keys && keys.api_key_write && (
+                {/* ── Volunteer: Discord + meetup + keys ── */}
+                {track === 'volunteer' && (
+                  <>
+                    <p className="text-foreground font-medium text-lg mb-2 text-center">
+                      Welcome to the team.
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-4 text-center leading-relaxed">
+                      Your account is ready. Join our Discord to connect with the community and get oriented at our next weekly meetup.
+                    </p>
+                    <p className="text-xs text-muted-foreground/50 mb-6 text-center font-mono">
+                      Check your inbox at <span className="text-foreground/70">{email}</span> for a verification email.
+                    </p>
+                  </>
+                )}
+
+                {/* ── Customer / Early Access ── */}
+                {track === 'customer' && (
+                  <>
+                    <p className="text-foreground font-medium text-lg mb-2 text-center">
+                      Welcome to Semantic Dreams.
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-4 text-center leading-relaxed">
+                      Your workspace is ready. Save your API keys below — they won't be shown again.
+                    </p>
+                    <p className="text-xs text-muted-foreground/50 mb-6 text-center font-mono">
+                      Check your inbox at <span className="text-foreground/70">{email}</span> for a verification email.
+                    </p>
+                  </>
+                )}
+
+                {/* API Keys — shown for customer + volunteer */}
+                {keys && keys.api_key_write && (track === 'customer' || track === 'volunteer') && (
                   <div className="space-y-3 mb-6">
                     <div className="rounded-xl border border-border/40 bg-background/30 p-4">
                       <div className="flex items-center justify-between mb-2">
@@ -523,25 +584,61 @@ export default function SignupSection() {
                   </div>
                 )}
 
-                {/* Quick start link */}
+                {/* Track-specific actions */}
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <a
-                    href={`${API_BASE}/`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium bg-primary/15 hover:bg-primary/25 text-foreground transition-all duration-300"
-                  >
-                    Open Dashboard
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </a>
-                  <a
-                    href={`${API_BASE}/docs`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm border border-border/40 text-muted-foreground hover:text-foreground hover:border-primary/20 transition-all duration-300"
-                  >
-                    API Docs
-                  </a>
+                  {track === 'volunteer' && (
+                    <>
+                      <a
+                        href="https://discord.gg/ohaco"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium bg-[#5865F2]/15 hover:bg-[#5865F2]/25 text-foreground transition-all duration-300"
+                      >
+                        Join Discord
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </a>
+                      <a
+                        href={`${API_BASE}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm border border-border/40 text-muted-foreground hover:text-foreground hover:border-primary/20 transition-all duration-300"
+                      >
+                        Open Dashboard
+                      </a>
+                    </>
+                  )}
+
+                  {track === 'beta' && (
+                    <a
+                      href="https://ohaco.org"
+                      className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium bg-primary/15 hover:bg-primary/25 text-foreground transition-all duration-300"
+                    >
+                      Back to OHACO
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </a>
+                  )}
+
+                  {track === 'customer' && (
+                    <>
+                      <a
+                        href={`${API_BASE}/`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium bg-primary/15 hover:bg-primary/25 text-foreground transition-all duration-300"
+                      >
+                        Open Dashboard
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </a>
+                      <a
+                        href={`${API_BASE}/docs`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm border border-border/40 text-muted-foreground hover:text-foreground hover:border-primary/20 transition-all duration-300"
+                      >
+                        API Docs
+                      </a>
+                    </>
+                  )}
                 </div>
 
                 <div className="mt-6 text-center">
