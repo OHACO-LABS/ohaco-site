@@ -1,10 +1,7 @@
 /**
- * ThesisSection — "The Declaration" — Five Axioms for a Sovereign Creative Economy
- * 
- * Design: Manifesto-style numbered axioms. Text floating in space.
- * Each axiom: one sentence that hits, one paragraph that earns it.
- * Versioned as v0.1 — a living document, inviting contribution.
- * No decorative images. Pure typography.
+ * ThesisSection — "The Declaration"
+ * Asymmetric 2-column layout: axiom number + statement on left,
+ * body text on right. Staggered reveals. Feels spatial, not listy.
  */
 import { motion } from 'framer-motion';
 import Reveal from '@/components/Reveal';
@@ -39,88 +36,72 @@ const axioms = [
 
 export default function ThesisSection() {
   return (
-    <section id="thesis" className="relative py-32 sm:py-40">
-      {/* Architectural line */}
-      <div className="arch-line mb-20 mx-auto max-w-3xl" />
-
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section header */}
-        <Reveal>
-          <div className="flex items-center gap-3 mb-4">
-            <span className="w-2 h-2 rounded-full bg-primary" />
-            <span className="text-xs tracking-[0.25em] uppercase text-muted-foreground font-mono">
-              The Thesis
-            </span>
-            <span className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground/40 font-mono ml-2 border border-border/30 px-2 py-0.5 rounded-full">
-              v0.1
-            </span>
+    <section id="thesis" className="relative py-28 sm:py-36">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header — left-aligned with version tag */}
+        <div className="grid lg:grid-cols-[1fr_1fr] gap-8 lg:gap-20 mb-16 lg:mb-24">
+          <div>
+            <Reveal>
+              <div className="flex items-center gap-3 mb-4">
+                <span className="w-2 h-2 rounded-full bg-primary" />
+                <span className="text-xs tracking-[0.25em] uppercase text-muted-foreground font-mono">
+                  The Thesis
+                </span>
+                <span className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground/40 font-mono ml-1 border border-border/30 px-2 py-0.5 rounded-full">
+                  v0.1
+                </span>
+              </div>
+            </Reveal>
+            <Reveal delay={0.05}>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight leading-[1.1]">
+                Five axioms for a{' '}
+                <span className="gradient-text">sovereign creative economy.</span>
+              </h2>
+            </Reveal>
           </div>
-        </Reveal>
-
-        <Reveal delay={0.05}>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight leading-[1.15] mb-4 max-w-2xl">
-            Five axioms for a{' '}
-            <span className="gradient-text">sovereign creative economy.</span>
-          </h2>
-        </Reveal>
-
-        <Reveal delay={0.1}>
-          <p className="text-muted-foreground text-sm sm:text-base max-w-xl mb-6 leading-relaxed">
-            Something really loved us to imagine us into an existence as beautiful as this.
-            We make it hard on each other — and in time, we will get it right again.
-            These are the principles we build from.
-          </p>
-        </Reveal>
-
-        {/* Opening quote — replaces decorative image */}
-        <Reveal delay={0.15}>
-          <div className="mb-16 pl-6 border-l border-primary/30">
-            <p className="text-xs font-mono text-foreground/50 leading-relaxed italic">
-              "The house is open.<br />
-              The tools are shared.<br />
-              The data stays yours."
-            </p>
+          <div className="lg:pt-12">
+            <Reveal delay={0.1}>
+              <p className="text-muted-foreground text-sm sm:text-base max-w-xl leading-relaxed mb-6">
+                Something really loved us to imagine us into an existence as beautiful as this.
+                We make it hard on each other — and in time, we will get it right again.
+                These are the principles we build from.
+              </p>
+            </Reveal>
+            <Reveal delay={0.15}>
+              <div className="pl-6 border-l border-primary/30">
+                <p className="text-xs font-mono text-foreground/50 leading-relaxed italic">
+                  "The house is open.<br />
+                  The tools are shared.<br />
+                  The data stays yours."
+                </p>
+              </div>
+            </Reveal>
           </div>
-        </Reveal>
+        </div>
 
-        {/* Axioms — full width, text floating in space */}
+        {/* Axioms — asymmetric 2-column per row */}
         <div className="space-y-0">
           {axioms.map((axiom, i) => (
-            <Reveal key={axiom.number} delay={0.15 + i * 0.08}>
+            <Reveal key={axiom.number} delay={0.1 + i * 0.06}>
               <motion.div
-                className="group relative py-10 border-b border-border/20 last:border-b-0"
-                whileHover={{ x: 4 }}
+                className="group grid lg:grid-cols-[240px_1fr] gap-4 lg:gap-12 py-8 sm:py-10 border-b border-border/15 last:border-b-0"
+                whileHover={{ x: 3 }}
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
               >
-                {/* Axiom number */}
-                <div className="flex items-start gap-6 sm:gap-8">
-                  <div className="flex-shrink-0 pt-1">
-                    <span className="font-mono text-xs text-primary/40 group-hover:text-primary/80 transition-colors duration-500 tracking-widest">
-                      {axiom.number}
-                    </span>
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    {/* Statement — the one sentence that hits */}
-                    <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground mb-4 tracking-tight group-hover:text-glow transition-all duration-500">
-                      {axiom.statement}
-                    </h3>
-
-                    {/* Body — the paragraph that earns it */}
-                    <p className="text-muted-foreground leading-relaxed text-sm sm:text-base max-w-2xl">
-                      {axiom.body}
-                    </p>
-                  </div>
+                {/* Left: number + statement */}
+                <div className="flex items-baseline gap-4 lg:block">
+                  <span className="font-mono text-[11px] text-primary/40 group-hover:text-primary/80 transition-colors duration-500 tracking-widest block mb-2">
+                    {axiom.number}
+                  </span>
+                  <h3 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight group-hover:text-glow transition-all duration-500">
+                    {axiom.statement}
+                  </h3>
                 </div>
 
-                {/* Hover glow line */}
-                <motion.div
-                  className="absolute left-0 bottom-0 h-px bg-gradient-to-r from-primary/0 via-primary/30 to-primary/0"
-                  initial={{ width: '0%' }}
-                  whileInView={{ width: '100%' }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 1.2, delay: 0.3 + i * 0.1, ease: 'easeOut' }}
-                />
+                {/* Right: body */}
+                <p className="text-muted-foreground/80 leading-relaxed text-sm sm:text-[15px] lg:pt-6 max-w-xl">
+                  {axiom.body}
+                </p>
               </motion.div>
             </Reveal>
           ))}
@@ -137,7 +118,6 @@ export default function ThesisSection() {
                   as contributors challenge assumptions, and as the tools we build reveal
                   what we haven't yet imagined.
                 </p>
-
                 <p className="text-xs font-mono text-muted-foreground/40 tracking-wide mt-4">
                   OHACO Labs · Est. 2024 · Thesis v0.1
                 </p>

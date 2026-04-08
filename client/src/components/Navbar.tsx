@@ -6,9 +6,9 @@
  */
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Github, Sun, Moon } from 'lucide-react';
+import { Menu, X, Github } from 'lucide-react';
 import { Link, useLocation } from 'wouter';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useTheme, THEMES } from '@/contexts/ThemeContext';
 
 
 
@@ -23,7 +23,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [location] = useLocation();
-  const { theme, toggleTheme, switchable } = useTheme();
+  const { theme, setTheme } = useTheme();
   const isHome = location === '/';
 
   useEffect(() => {
@@ -79,16 +79,23 @@ export default function Navbar() {
                 : 'bg-transparent'
             }`}
           >
-            {/* Logo — CSS monogram, no image */}
+            {/* Logo — animated iridescent mark */}
             <Link href="/" className="flex items-center gap-3 group">
-              <div
-                className="relative w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm text-primary transition-all duration-300 group-hover:shadow-[0_0_16px_rgba(108,92,231,0.3)]"
-                style={{
-                  border: '1.5px solid oklch(0.55 0.18 275)',
-                  background: 'oklch(0.12 0.02 275 / 60%)',
-                }}
-              >
-                O
+              <div className="relative w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:shadow-[0_0_20px_rgba(108,92,231,0.3)] group-hover:scale-105">
+                {/* Iridescent gradient background — shifts on hover */}
+                <div
+                  className="absolute inset-0 transition-all duration-700 group-hover:rotate-180"
+                  style={{
+                    background: 'conic-gradient(from 135deg, oklch(0.55 0.22 275), oklch(0.6 0.15 200), oklch(0.55 0.22 320), oklch(0.65 0.18 80), oklch(0.55 0.22 275))',
+                    opacity: 0.85,
+                  }}
+                />
+                {/* Inner dark circle with letter */}
+                <div className="relative w-[26px] h-[26px] rounded-[7px] bg-background/90 flex items-center justify-center">
+                  <span className="font-bold text-[13px] bg-gradient-to-br from-primary via-foreground/80 to-primary bg-clip-text text-transparent select-none">
+                    O
+                  </span>
+                </div>
               </div>
               <span className="font-semibold text-sm tracking-wider text-foreground/90 group-hover:text-foreground transition-colors">
                 OHACO
@@ -136,15 +143,22 @@ export default function Navbar() {
 
             {/* Desktop CTA + GitHub */}
             <div className="hidden md:flex items-center gap-3">
-              {switchable && toggleTheme && (
-                <button
-                  onClick={toggleTheme}
-                  className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-primary/8 transition-all duration-300"
-                  aria-label="Toggle theme"
-                >
-                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                </button>
-              )}
+              <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg bg-primary/5 border border-border/50" title="Switch theme">
+                {THEMES.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setTheme(t.id)}
+                    className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                      theme === t.id
+                        ? 'ring-2 ring-foreground/40 ring-offset-1 ring-offset-background scale-110'
+                        : 'opacity-60 hover:opacity-100 hover:scale-110'
+                    }`}
+                    style={{ background: t.dot }}
+                    aria-label={t.label}
+                    title={t.label}
+                  />
+                ))}
+              </div>
               <a
                 href="https://github.com/OHACO-LABS"
                 target="_blank"
@@ -250,15 +264,22 @@ export default function Navbar() {
                   <Github className="w-4 h-4" />
                   <span className="text-sm">GitHub</span>
                 </a>
-                {switchable && toggleTheme && (
-                  <button
-                    onClick={toggleTheme}
-                    className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-foreground transition-colors w-full text-left"
-                  >
-                    {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                    <span className="text-sm">{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
-                  </button>
-                )}
+                <div className="flex items-center gap-2 px-4 py-3">
+                  <span className="text-xs text-muted-foreground mr-1">Theme</span>
+                  {THEMES.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => setTheme(t.id)}
+                      className={`w-4 h-4 rounded-full transition-all duration-200 ${
+                        theme === t.id
+                          ? 'ring-2 ring-foreground/40 ring-offset-1 ring-offset-background scale-110'
+                          : 'opacity-50 hover:opacity-100'
+                      }`}
+                      style={{ background: t.dot }}
+                      aria-label={t.label}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>
