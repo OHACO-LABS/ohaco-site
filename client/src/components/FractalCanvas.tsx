@@ -35,15 +35,20 @@ const SPEED_CAP      = 2.5;
 const DAMPING        = 0.985;
 const GLOW_MULT      = 4;
 
-// ── Palette ──
-const COLORS_DARK  = ['#7c3aed', '#06b6d4', '#a78bfa', '#22d3ee', '#c084fc'];
-const COLORS_LIGHT = ['#6d28d9', '#0891b2', '#8b5cf6', '#0ea5e9', '#a855f7'];
+// ── Palette per theme ──
+const THEME_COLORS: Record<string, string[]> = {
+  dark:   ['#7c3aed', '#06b6d4', '#a78bfa', '#22d3ee', '#c084fc'],
+  light:  ['#6d28d9', '#0891b2', '#8b5cf6', '#0ea5e9', '#a855f7'],
+  nebula: ['#d946ef', '#7dd3fc', '#f0abfc', '#fda4af', '#a78bfa'],
+  plasma: ['#1de9b6', '#55c3ff', '#6ee7b7', '#fbbf24', '#34d399'],
+  copper: ['#ff8a4c', '#ffcb59', '#fb923c', '#9ad3ff', '#fbbf24'],
+};
 
 function getColors() {
   const theme = typeof document !== 'undefined'
     ? document.documentElement.getAttribute('data-theme') || 'dark'
     : 'dark';
-  return theme === 'light' ? COLORS_LIGHT : COLORS_DARK;
+  return THEME_COLORS[theme] || THEME_COLORS.dark;
 }
 
 function pickColor(colors: string[]) {
@@ -191,6 +196,21 @@ export default function FractalCanvas() {
 
     initStars();
     initParticles();
+
+    // ── Theme change: re-color particles without resetting positions ──
+    const observer = new MutationObserver(() => {
+      const colors = getColors();
+      for (const p of particles) {
+        const color = pickColor(colors);
+        p.color = color;
+        p.glowColor = color;
+        p.glow = makeGlow(color, p.r * GLOW_MULT);
+      }
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
 
     // ── Input ──
     const onMove = (e: MouseEvent | TouchEvent) => {
@@ -418,6 +438,7 @@ export default function FractalCanvas() {
       document.removeEventListener('mousemove', onMove);
       document.removeEventListener('touchmove', onMove);
       document.removeEventListener('mouseleave', onLeave);
+      observer.disconnect();
     };
   }, []);
 

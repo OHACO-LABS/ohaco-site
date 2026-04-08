@@ -123,6 +123,114 @@
   --sidebar-ring: oklch(0.546 0.245 275.75);
 }
 
+/* ── Nebula Bloom Theme ── */
+[data-theme="nebula"] {
+  --primary: oklch(0.65 0.28 320);
+  --primary-foreground: oklch(0.98 0 0);
+  --background: oklch(0.06 0.02 300);
+  --foreground: oklch(0.95 0.01 310);
+  --card: oklch(0.12 0.03 305);
+  --card-foreground: oklch(0.92 0.01 310);
+  --popover: oklch(0.12 0.03 305);
+  --popover-foreground: oklch(0.92 0.01 310);
+  --secondary: oklch(0.16 0.03 305);
+  --secondary-foreground: oklch(0.75 0.01 310);
+  --muted: oklch(0.18 0.03 305);
+  --muted-foreground: oklch(0.65 0.02 310);
+  --accent: oklch(0.65 0.28 320 / 12%);
+  --accent-foreground: oklch(0.95 0.01 310);
+  --destructive: oklch(0.65 0.2 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.85 0.12 320 / 15%);
+  --input: oklch(0.85 0.12 320 / 10%);
+  --ring: oklch(0.65 0.28 320);
+  --chart-1: oklch(0.65 0.28 320);
+  --chart-2: oklch(0.72 0.12 220);
+  --chart-3: oklch(0.7 0.15 350);
+  --chart-4: oklch(0.5 0.2 300);
+  --chart-5: oklch(0.4 0.15 290);
+  --sidebar: oklch(0.08 0.025 300);
+  --sidebar-foreground: oklch(0.88 0.01 310);
+  --sidebar-primary: oklch(0.65 0.28 320);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.16 0.03 305);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(0.85 0.12 320 / 10%);
+  --sidebar-ring: oklch(0.65 0.28 320);
+}
+
+/* ── Plasma Tide Theme ── */
+[data-theme="plasma"] {
+  --primary: oklch(0.8 0.18 165);
+  --primary-foreground: oklch(0.1 0.02 165);
+  --background: oklch(0.08 0.02 170);
+  --foreground: oklch(0.95 0.01 170);
+  --card: oklch(0.13 0.03 170);
+  --card-foreground: oklch(0.92 0.01 170);
+  --popover: oklch(0.13 0.03 170);
+  --popover-foreground: oklch(0.92 0.01 170);
+  --secondary: oklch(0.17 0.03 170);
+  --secondary-foreground: oklch(0.75 0.01 170);
+  --muted: oklch(0.19 0.03 170);
+  --muted-foreground: oklch(0.65 0.02 170);
+  --accent: oklch(0.8 0.18 165 / 12%);
+  --accent-foreground: oklch(0.95 0.01 170);
+  --destructive: oklch(0.65 0.2 80);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.7 0.12 165 / 15%);
+  --input: oklch(0.7 0.12 165 / 10%);
+  --ring: oklch(0.8 0.18 165);
+  --chart-1: oklch(0.8 0.18 165);
+  --chart-2: oklch(0.7 0.14 230);
+  --chart-3: oklch(0.78 0.15 90);
+  --chart-4: oklch(0.55 0.15 165);
+  --chart-5: oklch(0.4 0.1 165);
+  --sidebar: oklch(0.09 0.025 170);
+  --sidebar-foreground: oklch(0.88 0.01 170);
+  --sidebar-primary: oklch(0.8 0.18 165);
+  --sidebar-primary-foreground: oklch(0.1 0.02 165);
+  --sidebar-accent: oklch(0.17 0.03 170);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(0.7 0.12 165 / 10%);
+  --sidebar-ring: oklch(0.8 0.18 165);
+}
+
+/* ── Copper Orbit Theme ── */
+[data-theme="copper"] {
+  --primary: oklch(0.7 0.16 55);
+  --primary-foreground: oklch(0.98 0 0);
+  --background: oklch(0.1 0.02 45);
+  --foreground: oklch(0.95 0.01 50);
+  --card: oklch(0.15 0.03 48);
+  --card-foreground: oklch(0.92 0.01 50);
+  --popover: oklch(0.15 0.03 48);
+  --popover-foreground: oklch(0.92 0.01 50);
+  --secondary: oklch(0.19 0.03 48);
+  --secondary-foreground: oklch(0.75 0.01 50);
+  --muted: oklch(0.21 0.03 48);
+  --muted-foreground: oklch(0.65 0.02 50);
+  --accent: oklch(0.7 0.16 55 / 12%);
+  --accent-foreground: oklch(0.95 0.01 50);
+  --destructive: oklch(0.65 0.2 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.7 0.12 55 / 18%);
+  --input: oklch(0.7 0.12 55 / 10%);
+  --ring: oklch(0.7 0.16 55);
+  --chart-1: oklch(0.7 0.16 55);
+  --chart-2: oklch(0.78 0.14 80);
+  --chart-3: oklch(0.65 0.12 220);
+  --chart-4: oklch(0.5 0.12 55);
+  --chart-5: oklch(0.35 0.08 55);
+  --sidebar: oklch(0.11 0.025 45);
+  --sidebar-foreground: oklch(0.88 0.01 50);
+  --sidebar-primary: oklch(0.7 0.16 55);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.19 0.03 48);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(0.7 0.12 55 / 10%);
+  --sidebar-ring: oklch(0.7 0.16 55);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
