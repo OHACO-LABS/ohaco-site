@@ -3,7 +3,7 @@
  * No persistent storage, no webhook, no public API or automatic retries.
  */
 import {queryKeywords} from './client.mjs';
-import {diagnoseDataForSeo} from './diagnose.mjs';
+import {diagnoseDataForSeo, diagnoseKeywordSandbox} from './diagnose.mjs';
 
 const keywords=['hubspot consultant','ai governance consultant'];
 const now=Date.now();
@@ -12,7 +12,14 @@ const expiresAt=Date.parse(process.env.OHACO_DATAFORSEO_LIVE_UNTIL||'');
 const valid=enabled&&Number.isFinite(expiresAt)&&expiresAt>now&&expiresAt<=now+30*60*1000;
 
 try {
-  if(process.env.OHACO_DATAFORSEO_DIAGNOSTIC==='enabled'){
+  if(process.env.OHACO_DATAFORSEO_DIAGNOSTIC==='sandbox'){
+    const result=await diagnoseKeywordSandbox({
+      login:process.env.DATAFORSEO_API_LOGIN,
+      password:process.env.DATAFORSEO_API_PASSWORD
+    });
+    console.log(JSON.stringify(result));
+    if(result.outcome!=='sandbox_api_success')process.exitCode=1;
+  }else if(process.env.OHACO_DATAFORSEO_DIAGNOSTIC==='enabled'){
     const result=await diagnoseDataForSeo({
       login:process.env.DATAFORSEO_API_LOGIN,
       password:process.env.DATAFORSEO_API_PASSWORD
