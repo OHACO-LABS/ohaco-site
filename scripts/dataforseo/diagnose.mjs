@@ -65,6 +65,8 @@ export async function diagnoseKeywordSandbox({login,password,fetcher=fetch}={}){
   endpoint:'/v3/keywords_data/google_ads/search_volume/live',host:'sandbox.dataforseo.com',
   httpStatus:res.status,contentType,server:safeHeader(res,'server'),
   cfRay:safeHeader(res,'cf-ray'),apiStatusCode,taskStatusCode,
-  outcome:res.status===200&&apiStatusCode===20000?'sandbox_api_success':
+  outcome:res.status===200&&apiStatusCode===20000&&taskStatusCode===20000?'sandbox_api_success':
+    taskStatusCode===40201||apiStatusCode===40201?'account_access_paused_contact_provider':
+    taskStatusCode===40104||apiStatusCode===40104?'account_verification_required':
     res.status===403?'sandbox_http_forbidden':'sandbox_requires_investigation'};
 }
