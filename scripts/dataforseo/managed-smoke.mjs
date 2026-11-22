@@ -3,6 +3,7 @@
  * No persistent storage, no webhook, no public API or automatic retries.
  */
 import {queryKeywords} from './client.mjs';
+import {diagnoseDataForSeo} from './diagnose.mjs';
 
 const keywords=['hubspot consultant','ai governance consultant'];
 const now=Date.now();
@@ -11,7 +12,14 @@ const expiresAt=Date.parse(process.env.OHACO_DATAFORSEO_LIVE_UNTIL||'');
 const valid=enabled&&Number.isFinite(expiresAt)&&expiresAt>now&&expiresAt<=now+30*60*1000;
 
 try {
-  if(!valid){
+  if(process.env.OHACO_DATAFORSEO_DIAGNOSTIC==='enabled'){
+    const result=await diagnoseDataForSeo({
+      login:process.env.DATAFORSEO_API_LOGIN,
+      password:process.env.DATAFORSEO_API_PASSWORD
+    });
+    console.log(JSON.stringify(result));
+    if(!result.authConfirmed) process.exitCode=1;
+  }else if(!valid){
     const r=await queryKeywords(keywords);
     console.log(JSON.stringify({event:'ohaco-dataforseo-smoke',mode:r.mode,keywords:r.request.keywords,
       note:'No credentials accessed and no billable provider request made.'}));
