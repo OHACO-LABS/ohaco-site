@@ -1,39 +1,43 @@
-# DataForSEO as a test-stage keyword intelligence provider
+# OHACO DataForSEO — isolated development sandbox
 
-**Status:** Offline/mock tests only; not connected to a paid DataForSEO account, not deployed. This is a backend/CLI adapter; never import it into browser/React code.
+**Status (Nov 21–22, 2026):** Render cron service successfully deployed and dry-run tested in the OHACO Labs workspace. Credentials authenticate successfully against the free DataForSEO User Data endpoint, but keyword API calls are blocked because **the DataForSEO account has not completed verification** (provider status code **40104**). No production systems have been changed; no keyword search data retrieved.
 
-## Secure credentials
-Set `DATAFORSEO_API_LOGIN` and `DATAFORSEO_API_PASSWORD` in the server environment or secret manager. **Do not put them in GitHub, .env files checked into source control, client-side VITE_ variables, screenshots or chat.** Base64 is not encryption. Changing the values when credentials rotate requires no code changes. The photographed password is masked and Base64 field is cropped, so the screenshot cannot be used for a complete secure configuration.
+## Environments
 
-## Safe usage
-Requires Node 20+; no dependencies.
-- Dry run (free, no network): `node scripts/dataforseo/run.mjs --keywords="hubspot consultant,n8n developer"`
-- Offline tests: `node --test scripts/dataforseo/client.test.mjs`
-- Manually authorized billable test: `node scripts/dataforseo/run.mjs --keywords="hubspot consultant,n8n developer" --live`
+- GitHub draft PR #7, branch `agent/dataforseo-keyword-provider-20261121`
+- Render cron: `ohaco-dataforseo-research-sandbox`, ID `crn-dc15khmtlv9c73b4onfg`, workspace OHACO Labs, Virginia region, Starter cron plan
+- No public HTTP endpoint, database, or automated keyword collection
+- Automatic Git deployments disabled, cron schedule set to January 1 at 00:00 UTC solely because Render requires a schedule
+- The default cron behavior is a dry-run with **zero DataForSEO API requests**.
 
-Only `--live` makes the paid call, one request with at most 25 terms. Inspect account pricing and remaining balance first; it is not a guaranteed-zero-cost endpoint. Output includes provider, reported cost, search volumes, CPC, competition and monthly trends. The adapter never retries automatically.
+## Server secrets
 
-## Production gate
-Add durable caching, provider-budget limits, job receipts, secret manager provisioning, rate controls, scoped API authentication and legal/security review before exposure through any website or AI agent. Credentials must be configured outside GitHub. Do not connect this into Prompt-Native or Collab Memory.
+Configure `DATAFORSEO_API_LOGIN` and `DATAFORSEO_API_PASSWORD` privately in the Render Environment dashboard. These are the API credentials, not the normal DataForSEO website password. Do **not** commit credentials, screenshots or Basic Auth headers to GitHub; do not expose them via browser variables or chat. Rotating the API password requires changing only the private Render environment value.
 
-Docs: https://docs.dataforseo.com/v3/keywords_data/google_ads/search_volume/live/
+## Tests and actual diagnostic findings
 
-## Approved one-request smoke test — pending private credentials
-The founder has approved a **single small live DataForSEO API request** for test-stage validation, but has **not approved creating/deploying hosting resources**. The connected Render workspace currently lists **zero services**, so there is no isolated running service on which to configure private values. The prior screenshot shows a masked password and incomplete Base64 text. No production credential can safely be recovered from it; do not ask the founder to paste the value into a chat, PR, ticket, or client-side variable.
+1. Standalone adapter offline tests: six passing on Node.js 22. The exact committed branch is not yet CI-verified.
+2. Render Node.js build and dry-run: successful, no provider requests.
+3. First actual production Google Ads Search Volume test: HTTP **401**, before credentials were corrected.
+4. Second production Google Ads Search Volume test: HTTP **403**, before account verification. No keyword data retrieved; billing status not independently confirmed.
+5. Free credential test `GET https://api.dataforseo.com/v3/appendix/user_data`: HTTP **200**, general and task status both **20000**. Credentials are valid.
+6. Free sandbox test `POST https://sandbox.dataforseo.com/v3/keywords_data/google_ads/search_volume/live`: HTTP **403**, JSON general status **40104** (account verification required). No billable API call and no actual keyword data.
 
-**Local private execution (developer workstation only):**
+**Root cause:** DataForSEO documents status 40104 as `please verify your account before using the api`, requiring completion of email and/or phone verification in the account dashboard. Go to https://app.dataforseo.com/ and complete verification before a further live test. Do not rotate credentials merely to fix status 40104.
 
-```bash
-node --test scripts/dataforseo/client.test.mjs
-node scripts/dataforseo/run.mjs --keywords="hubspot consultant,ai governance consultant"
-bash scripts/dataforseo/private-live-test.sh I_APPROVE_ONE_PAID_REQUEST
-```
+## Safety gates
 
-The interactive script reads login and password directly from a terminal (password input hidden); it makes exactly one explicit billable call containing two low-sensitivity keywords and performs no automatic retries. It does not print secret values or store them in a file. Do not execute on shared terminals or terminals with verbose environment/process tracing. Check provider billing after the call and record only keyword metrics, response status and billed cost.
+- `OHACO_DATAFORSEO_DIAGNOSTIC`: `disabled` by default. `enabled` triggers a free read-only API authentication probe; `sandbox` triggers a free dummy-keyword API probe.
+- `OHACO_DATAFORSEO_LIVE_TEST`: `disabled` by default. A billable request requires exactly `I_APPROVE_ONE_PAID_REQUEST` and a future `OHACO_DATAFORSEO_LIVE_UNTIL` no more than 30 minutes away.
+- Every diagnostic and live test is one-shot and manually triggered. No automatic retries. Turn off gates immediately after each test and verify replacement deployment reached `live`.
+- Do not repeat the paid production keyword request before verification, billing checks and fresh user authorization.
 
-**When an isolated Render development service exists:** set `DATAFORSEO_API_LOGIN` and `DATAFORSEO_API_PASSWORD` via the Render Environment dashboard. Choose **Save only** to avoid triggering a deploy; the values are not active at runtime until a later authorized deploy. Do not add DataForSEO credentials to an OHACO production web service merely to test the integration. If the service is managed by Blueprint configuration, review its source-of-truth and reconciliation first.
+## References
 
-**Result status:** local standalone fixture suite ran **6/6 passing**; this is not a live authentication test and is not a verified CI run of the exact remote GitHub head. `--live` on this branch has not been executed. Do not report live data or connection success before the private one-request check actually returns a successful response.
-
-### Upgrade/rotation
-Use a dedicated low-privilege API login with budget controls if supported by the account; rotate via the provider settings and replace the two server-side secret values without code changes. Review API usage/costs per research batch. Never store Base64 Basic Authentication headers as a secret management substitute.
+- Account dashboard: https://app.dataforseo.com/
+- DataForSEO errors and 40104: https://docs.dataforseo.com/v3/appendix-errors/
+- User Data (free): https://docs.dataforseo.com/v3/appendix/user_data/
+- Sandbox (free, dummy data): https://docs.dataforseo.com/v3/appendix-sandbox/
+- Google Ads Search Volume Live: https://docs.dataforseo.com/v3/keywords_data/google_ads/search_volume/live/
+- Official remote MCP endpoint: https://mcp.dataforseo.com/v3/mcp
+- Official MCP and OAuth guide: https://dataforseo.com/help-center/connecting-the-remote-dataforseo-mcp-server-using-oauth
