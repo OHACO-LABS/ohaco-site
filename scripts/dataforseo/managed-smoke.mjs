@@ -3,6 +3,8 @@
  * No persistent storage, no webhook, no public API or automatic retries.
  */
 import {queryKeywords} from './client.mjs';
+import {spawnSync} from 'node:child_process';
+import {readdirSync} from 'node:fs';
 import {diagnoseDataForSeo, diagnoseKeywordSandbox} from './diagnose.mjs';
 
 const keywords=['hubspot consultant','ai governance consultant'];
@@ -12,7 +14,16 @@ const expiresAt=Date.parse(process.env.OHACO_DATAFORSEO_LIVE_UNTIL||'');
 const valid=enabled&&Number.isFinite(expiresAt)&&expiresAt>now&&expiresAt<=now+30*60*1000;
 
 try {
-  if(process.env.OHACO_DATAFORSEO_DIAGNOSTIC==='sandbox'){
+  if(process.env.OHACO_DATAFORSEO_DIAGNOSTIC==='offline-tests'){
+    const tests=readdirSync(new URL('.',import.meta.url)).filter(x=>x.endsWith('.test.mjs')).sort().map(x=>'scripts/dataforseo/'+x);
+    const run=spawnSync(process.execPath,['--test',...tests],{
+      encoding:'utf8',timeout:120000,maxBuffer:1024*1024,
+      env:{PATH:process.env.PATH||'',HOME:process.env.HOME||'',CI:'true',NODE_ENV:'test'}
+    });
+    console.log(JSON.stringify({event:'ohaco-dataforseo-offline-tests',testFiles:tests,exitStatus:run.status,
+      stdout:(run.stdout||'').slice(-10000),stderr:(run.stderr||'').slice(-1500)}));
+    if(run.status!==0||run.error)process.exitCode=1;
+  }else if(process.env.OHACO_DATAFORSEO_DIAGNOSTIC==='sandbox'){
     const result=await diagnoseKeywordSandbox({
       login:process.env.DATAFORSEO_API_LOGIN,
       password:process.env.DATAFORSEO_API_PASSWORD
