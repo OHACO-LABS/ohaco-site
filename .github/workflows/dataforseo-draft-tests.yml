@@ -1,0 +1,30 @@
+name: DataForSEO Draft Offline Tests
+on:
+  push:
+    branches:
+      - agent/dataforseo-keyword-provider-20261121
+    paths:
+      - 'scripts/dataforseo/**'
+      - '.github/workflows/dataforseo-draft-tests.yml'
+  pull_request:
+    paths:
+      - 'scripts/dataforseo/**'
+      - '.github/workflows/dataforseo-draft-tests.yml'
+permissions:
+  contents: read
+jobs:
+  offline-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      OHACO_DATAFORSEO_DIAGNOSTIC: disabled
+      OHACO_DATAFORSEO_LIVE_TEST: disabled
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run offline provider and research tests
+        run: node --test scripts/dataforseo/*.test.mjs
+      - name: Verify offline research CLI
+        run: node scripts/dataforseo/opportunity-cli.mjs plan
